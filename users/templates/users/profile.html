@@ -1,0 +1,210 @@
+{% extends 'bmstu/base.html' %}
+{% load static %}
+{% block title %}
+    {% if is_owner %}
+        Мой профиль
+    {% else %}
+        Профиль {{ user.username }}
+    {% endif %}
+{% endblock title %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            {% if user.profile.avatar %}
+                <img src="{{ user.profile.avatar.url }}" alt="Profile Picture" class="profile-image">
+            {% else %}
+                <img src="{% static 'img/noimage.jpg' %}" alt="Profile Picture" class="profile-image">
+            {% endif %}
+            
+            <h2 class="profile-name">{{ user.get_full_name|default:user.username }}</h2>
+        </div>
+        
+        {% if is_owner %}
+            <form method="post" enctype="multipart/form-data" class="profile-form">
+                {% csrf_token %}
+                <div class="profile-info">
+                    <div class="form-group">
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Имя</label>
+                        <input type="text" name="first_name" value="{{ user.first_name }}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Фамилия</label>
+                        <input type="text" name="last_name" value="{{ user.last_name }}" class="form-control">
+                    </div>
+                    <div class="avatar-upload">
+                        <label class="avatar-label">Изменить аватар
+                            <input type="file" name="avatar" accept="image/*" hidden>
+                        </label>
+                        <div class="selected-file"></div>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button type="submit" class="btn-edit">Сохранить изменения</button>
+                </div>
+            </form>
+        {% else %}
+           
+            <div class="profile-info view-only">
+                {% if user.email %}
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                {% endif %}
+                {% if user.first_name or user.last_name %}
+                    <p><strong>Полное имя:</strong> {{ user.get_full_name }}</p>
+                {% endif %}
+                <p><strong>Дата регистрации:</strong> {{ user.date_joined|date:"d.m.Y" }}</p>
+            </div>
+        {% endif %}
+    </div>   
+</div>
+
+<style>
+.user-content {
+    max-width: 1000px;
+    margin: auto;
+    padding: 1rem;
+}
+
+.content-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.content-section h3 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.content-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.content-item {
+    background: #f8f9fa;
+    border-radius: 9px;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+}
+
+.content-item h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+}
+
+.content-item p {
+    margin: 0.25rem 0;
+    color: #666;
+}
+
+.btn-download {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: var(--color-light);
+    border: 1px solid #666666;
+    border-radius: 6px;
+    color: #333333;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.btn-download:hover {
+    background: #f8f9fa;
+    border-color: #333333;
+    color: #1a1a1a;
+}
+
+.no-content {
+    color: #666;
+    text-align: center;
+    font-style: italic;
+}
+</style>
+
+{% if is_owner %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const avatarInput = document.querySelector('input[type="file"]');
+    const selectedFile = document.querySelector('.selected-file');
+    
+    avatarInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            selectedFile.textContent = 'Выбран файл: ' + this.files[0].name;
+        } else {
+            selectedFile.textContent = '';
+        }
+    });
+});
+</script>
+{% endif %}
+<div class="user-content">
+    <div class="content-section">
+        <h3>Домашние задания</h3>
+        {% if homeworks %}
+            <div class="content-list">
+                {% for homework in homeworks %}
+                    <div class="content-item">
+                        <h4>{{ homework.title }}</h4>
+                        <p><strong>Предмет:</strong> {{ homework.subject }}</p>
+                        <p><strong>Описание:</strong> {{ homework.description }}</p>
+                        <p><strong>Загружено:</strong> {{ homework.uploaded_at|date:"d.m.Y H:i" }}</p>
+                        {% if homework.file %}
+                            <a href="{{ homework.file.url }}" class="btn-download" target="_blank">Скачать файл</a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-content">Нет загруженных домашних заданий</p>
+        {% endif %}
+    </div>
+
+    <div class="content-section">
+        <h3>Лекции</h3>
+        {% if lectures %}
+            <div class="content-list">
+                {% for lecture in lectures %}
+                    <div class="content-item">
+                        <h4>{{ lecture.title }}</h4>
+                        <p><strong>Предмет:</strong> {{ lecture.subject.name }}</p>
+                        <p><strong>Описание:</strong> {{ lecture.description }}</p>
+                        <p><strong>Загружено:</strong> {{ lecture.uploaded_at|date:"d.m.Y H:i" }}</p>
+                        {% if lecture.file %}
+                            <a href="{{ lecture.file.url }}" class="btn-download" target="_blank">Скачать файл</a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-content">Нет загруженных лекций</p>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+    <div class="profile-container">
+        <div class="profile-card">
+            <h2 class="profile-name" style="text-align: center;">Пожалуйста, войдите в систему</h2>
+            <div class="profile-actions">
+                <a href="{% url 'users:login' %}" class="btn-edit">Войти</a>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock content %}
+
+
+
+

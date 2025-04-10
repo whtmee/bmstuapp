@@ -1,0 +1,39 @@
+{% extends 'bmstu/base.html' %}
+{% load static %}
+
+{% block title %}Главная{% endblock title %}
+
+{% block content %}
+<div class="users-container">
+    <h1 class="page-title">Студенты</h1>
+    
+    <div class="users-grid">
+        {% for user in users %}
+        <div class="user-card">
+            <div class="user-avatar">
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" class="avatar-img">
+                {% else %}
+                    <img src="{% static 'img/noimage.jpg' %}" alt="{{ user.username }}" class="avatar-img">
+                {% endif %}
+            </div>
+            <div class="user-info">
+                <h3 class="user-name">{{ user.get_full_name|default:user.username }}</h3>
+                {% if user.email %}
+                    <p class="user-email">{{ user.email }}</p>
+                {% endif %}
+                <a href="{% url 'users:profile' user.id %}" class="view-profile-btn">Просмотреть профиль</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-users">
+            <p>Пока нет зарегистрированных пользователей</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}
+
+
+
+

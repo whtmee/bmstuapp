@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock title %}</title>
+    
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/" style="text-decoration: none;">
+                <div class="navbar-brand">
+                    <img src="{% static 'img/logo2.svg' %}" alt="BMSTU Logo" class="navbar-logo">
+                    BMSTU
+                </div>
+            </a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'bmstu:balance' %}" class="balance-link">Баланс: </a>
+            {% endif %}
+        </div>
+        <div class="navbar-menu">
+            <div class="menu-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/" {% if request.path == '/' %}class="active"{% endif %}>Главная</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'bmstu:stats' %}" {% if 'stat' in request.path %}class="active"{% endif %}>Статистика</a></li>
+                    <li><a href="{% url 'bmstu:homework' %}" {% if 'homework' in request.path %}class="active"{% endif %}>Домашнее задание</a></li>
+                    <li><a href="{% url 'bmstu:lecture' %}" {% if 'lecture' in request.path %}class="active"{% endif %}>Лекции</a></li>
+                    <li><a href="{% url 'users:profile' %}" {% if 'profile' in request.path %}class="active"{% endif %}>Профиль</a></li>
+                    <li>
+                        <form method="POST" action="{% url 'users:logout' %}" style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit" style="background: none; border: none; color: var(--color-dark); cursor: pointer; font-size: inherit; padding: 0;">Выход</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'users:signup' %}">Статистика</a></li>
+                    <li><a href="{% url 'users:signup' %}">Домашнее задание</a></li>
+                    <li><a href="{% url 'users:signup' %}">Лекции</a></li>
+                    <li><a href="{% url 'users:signup' %}">Регистрация</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    {% block content %}
+    {% endblock content %}
+    
+    <footer class="footer {% if user.is_authenticated %}footer-auth{% endif %}">
+        <ul class="footer-links">
+            
+            <li>
+                <a href="https://t.me/whtmeeee" target="_blank" class="footer-link">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .24z"/>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/whtmee" target="_blank" class="footer-link">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="https://vk.com/qw9rty" target="_blank" class="footer-link vk-link">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.915 13.028c-.388-.49-.277-.708 0-1.146.005-.005 3.208-4.431 3.538-5.932l.002-.001c.164-.547 0-.949-.793-.949h-2.624c-.668 0-.976.345-1.141.731 0 0-1.336 3.198-3.226 5.271-.61.599-.892.791-1.225.791-.164 0-.419-.192-.419-.739V5.949c0-.656-.187-.949-.74-.949H9.161c-.419 0-.668.306-.668.591 0 .622.945.765 1.043 2.515v3.797c0 .832-.151.985-.486.985-.892 0-3.057-3.211-4.34-6.886-.259-.713-.512-1.001-1.185-1.001H.9c-.749 0-.9.345-.9.731 0 .682.892 4.073 4.148 8.553C6.318 17.343 9.374 19 12.154 19c1.671 0 1.875-.368 1.875-1.001 0-2.922-.151-3.198.686-3.198.388 0 1.056.192 2.616 1.667C19.114 18.217 19.407 19 20.405 19h2.624c.748 0 1.127-.368.909-1.094-.499-1.527-3.871-4.668-4.023-4.878z"/>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </footer>
+
+    <script>
+    document.querySelector('.menu-icon').addEventListener('click', function() {
+        document.querySelector('.nav-links').classList.toggle('active');
+    });
+    </script>
+</body>
+</html>

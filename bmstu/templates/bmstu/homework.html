@@ -1,0 +1,138 @@
+{% extends 'bmstu/base.html' %}
+{% load static %}
+
+{% block title %}Домашние задания{% endblock title %}
+
+{% block content %}
+<div class="homework-container">
+    <h1 class="page-title">Система управления домашними заданиями</h1>
+    
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="message {% if message.tags %}message-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="homework-content">
+        <div class="upload-section">
+            <h2>Загрузить домашнее задание</h2>
+            {% if upload_disabled %}
+            <div class="upload-timer">
+                Следующая загрузка будет доступна через <span id="timer">{{ remaining_time }}</span> секунд
+            </div>
+            {% endif %}
+            <form class="homework-form" method="post" enctype="multipart/form-data" {% if upload_disabled %}disabled{% endif %}>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Предмет</label>
+                    <select name="subject" required {% if upload_disabled %}disabled{% endif %}>
+                        <option value="" disabled selected>Выберите предмет</option>
+                        {% for subject in subjects %}
+                            <option value="{{ subject.id }}">{{ subject.subject_title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Название работы</label>
+                    <input type="text" name="title" placeholder="Например: Задание 5" required {% if upload_disabled %}disabled{% endif %}>
+                </div>
+                
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea name="description" placeholder="Дополнительные комментарии к работе" required {% if upload_disabled %}disabled{% endif %}></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Файл с работой</label>
+                    <div class="file-input-wrapper">
+                        <button type="button" class="file-input-button" {% if upload_disabled %}disabled{% endif %}>Выберите файл</button>
+                        <span class="file-name">Файл не выбран</span>
+                        <input type="file" name="file" hidden required {% if upload_disabled %}disabled{% endif %}>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-button" {% if upload_disabled %}disabled{% endif %}>Отправить работу</button>
+            </form>
+        </div>
+        
+        <div class="recent-works">
+            <h2>Последние загруженные работы</h2>
+            <div class="works-list">
+                {% for homework in homeworks %}
+                <div class="work-item">
+                    <div class="work-info">
+                        <h3>{{ homework.subject.subject_title }}</h3>
+                        <p class="work-title">{{ homework.title }}</p>
+                        <p class="work-description">{{ homework.description }}</p>
+                        <div class="work-meta">
+                            <span class="student-name">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: -4px;">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                Студент: {{ homework.student.get_full_name|default:homework.student.username }}</span>
+                            <span class="date">{{ homework.uploaded_at|date:"d.m.Y H:i" }}</span>
+                        </div>
+                        {% if homework.file %}
+                            <a href="{{ homework.file.url }}" class="download-button" download>
+                                <i class="fas fa-download"></i> Скачать работу
+                            </a>
+                        {% endif %}
+                    </div>
+                    <span class="status {% if homework.status == 'pending' %}pending{% elif homework.status == 'approved' %}accepted{% elif homework.status == 'rejected' %}rejected{% elif homework.status == 'revision' %}revision{% endif %}">
+                        {{ homework.get_status_display }}
+                    </span>
+                </div>
+                {% empty %}
+                <div class="work-item">
+                    <p>Нет загруженных работ</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.querySelector('input[type="file"]');
+    const fileButton = document.querySelector('.file-input-button');
+    const fileName = document.querySelector('.file-name');
+
+    fileButton.addEventListener('click', () => {
+        if (!fileButton.disabled) {
+            fileInput.click();
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            fileName.textContent = fileInput.files[0].name;
+        } else {
+            fileName.textContent = 'Файл не выбран';
+        }
+    });
+
+   
+    const timerElement = document.getElementById('timer');
+    if (timerElement) {
+        let timeLeft = parseInt(timerElement.textContent);
+        
+        const timer = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                window.location.reload();
+            }
+        }, 1000);
+    }
+});
+</script>
+{% endblock content %}

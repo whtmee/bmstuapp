@@ -1,0 +1,42 @@
+{% extends 'bmstu/base.html' %}
+{% load static %}
+
+{% block title %}Баланс{% endblock title %}
+
+{% block content %}
+<div class="balance-container">
+    {% for money in user_money %}
+    <div class="balance-card">
+        <div class="balance-header">
+            <h2>Баланс пользователя {{ money.user.username }}</h2>
+        </div>
+        <div class="balance-content">
+            <div class="balance-amount">
+                <span class="coins">{{ money.balance }}</span>
+                <span class="coins-label">монет</span>
+            </div>
+            <div class="balance-stats">
+                <div class="stat-item">
+                    <div class="stat-icon homework-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ money.homeworks_count }}</span>
+                        <span class="stat-label">Одобренных домашних заданий</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon lecture-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ money.lectures_count }}</span>
+                        <span class="stat-label">Одобренных лекций</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

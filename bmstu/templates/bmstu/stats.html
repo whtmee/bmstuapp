@@ -1,0 +1,69 @@
+{% extends 'bmstu/base.html' %}
+{% load static %}
+
+{% block title %}Статистика{% endblock title %}
+
+{% block content %}
+<div class="stats-container">
+    <h1 class="page-title">Статистика принятых работ</h1>
+    
+    <div class="stats-table-wrapper">
+        <table class="stats-table">
+            <thead>
+                <tr>
+                    <th>Пользователь</th>
+                    <th>Домашние работы</th>
+                    <th>Лекции</th>
+                    <th>Всего работ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in user_stats %}
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                {% if stat.user.profile.avatar %}
+                                    <img src="{{ stat.user.profile.avatar.url }}" alt="Avatar" class="avatar-img">
+                                {% else %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                            <span class="user-name">{{ stat.user.get_full_name|default:stat.user.username }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stat-value">
+                            <span class="number">{{ stat.homeworks_count }}</span>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: {% widthratio stat.homeworks_count stat.total_count 100 %}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stat-value">
+                            <span class="number">{{ stat.lectures_count }}</span>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: {% widthratio stat.lectures_count stat.total_count 100 %}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="total-number">{{ stat.total_count }}</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="no-stats">
+                        <p>Нет данных для отображения</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %} 
