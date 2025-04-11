@@ -14,7 +14,7 @@
 
 body {
     min-height: 100vh;
-    background: url('../img/gtt.gif') no-repeat center center fixed;
+    background: url('../img/wall.png') no-repeat center center fixed;
     background-size: cover;
     position: relative;
 }
@@ -556,7 +556,7 @@ body {
 .work-item {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: stretch;
     padding: 1.5rem;
     background: var(--color-light);
     border-radius: 8px;
@@ -567,7 +567,27 @@ body {
 
 .work-info {
     flex: 1;
-    margin-right: 1rem;
+    margin-right: 2rem;
+}
+
+.work-item-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    min-width: 200px;
+}
+
+.work-item-right-top {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.work-item-right-bottom {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-top: auto;
 }
 
 .work-info h3 {
@@ -1966,4 +1986,94 @@ textarea:disabled {
     .balance-stats {
         grid-template-columns: 1fr;
     }
+}
+
+/* Стили для секции голосования */
+.vote-section {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.vote-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--color-light);
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    color: #363636;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 85px;
+}
+
+.vote-btn i {
+    font-size: 14px;
+    transition: transform 0.2s ease;
+}
+
+.vote-btn span {
+    font-weight: 500;
+    color: #363636;
+}
+
+.like-btn:hover {
+    background: #f8f9fa;
+    border-color: #00b894;
+    color: #00b894;
+}
+
+.dislike-btn:hover {
+    background: #f8f9fa;
+    border-color: #ff7675;
+    color: #ff7675;
+}
+
+.vote-btn.active.like-btn {
+    background: #00b894;
+    border-color: #00b894;
+    color: white;
+}
+
+.vote-btn.active.dislike-btn {
+    background: #ff7675;
+    border-color: #ff7675;
+    color: white;
+}
+
+.vote-btn.active span {
+    color: white;
+}
+
+.vote-btn:hover i {
+    transform: scale(1.2);
+}
+
+/* Анимация для счетчиков голосов */
+.like-count, .dislike-count {
+    transition: all 0.3s ease;
+}
+
+.vote-btn:hover .like-count,
+.vote-btn:hover .dislike-count {
+    transform: scale(1.1);
+}
+
+.work-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+.work-actions .download-button {
+    margin-right: auto;
 }

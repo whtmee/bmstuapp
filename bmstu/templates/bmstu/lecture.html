@@ -64,7 +64,7 @@
             <h2>Последние загруженные лекции</h2>
             <div class="lectures-list">
                 {% for lecture in lectures %}
-                <div class="lecture-item">
+                <div class="lecture-item" data-id="{{ lecture.id }}">
                     <div class="lecture-info">
                         <h3>{{ lecture.subject.subject_title }}</h3>
                         <p class="lecture-title">{{ lecture.title }}</p>
@@ -82,6 +82,20 @@
                     <span class="status {% if lecture.status == 'pending' %}pending{% elif lecture.status == 'approved' %}accepted{% elif lecture.status == 'rejected' %}rejected{% endif %}">
                         {{ lecture.get_status_display }}
                     </span>
+                    <div class="vote-section">
+                        <button class="vote-btn like-btn {% if lecture.user_vote and lecture.user_vote.is_like %}active{% endif %}" 
+                                data-type="like" 
+                                data-url="{% url 'bmstu:vote_lecture' lecture.id %}">
+                            <i class="far fa-heart"></i>
+                            <span class="like-count">{{ lecture.votes.likes }}</span>
+                        </button>
+                        <button class="vote-btn dislike-btn {% if lecture.user_vote and not lecture.user_vote.is_like %}active{% endif %}" 
+                                data-type="dislike" 
+                                data-url="{% url 'bmstu:vote_lecture' lecture.id %}">
+                            <i class="far fa-thumbs-down"></i>
+                            <span class="dislike-count">{{ lecture.votes.dislikes }}</span>
+                        </button>
+                    </div>
                 </div>
                 {% empty %}
                 <div class="lecture-item">
@@ -131,6 +145,52 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 1000);
     }
+
+    const voteButtons = document.querySelectorAll('.vote-btn');
+    
+    voteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const url = this.dataset.url;
+            const isLike = this.dataset.type === 'like';
+            const lectureItem = this.closest('.lecture-item');
+            const likeBtn = lectureItem.querySelector('.like-btn');
+            const dislikeBtn = lectureItem.querySelector('.dislike-btn');
+            const likeCount = lectureItem.querySelector('.like-count');
+            const dislikeCount = lectureItem.querySelector('.dislike-count');
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: `is_like=${isLike}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success' || data.status === 'removed') {
+                    likeCount.textContent = data.votes.likes;
+                    dislikeCount.textContent = data.votes.dislikes;
+                    
+                    if (data.status === 'success') {
+                        if (isLike) {
+                            likeBtn.classList.add('active');
+                            dislikeBtn.classList.remove('active');
+                        } else {
+                            dislikeBtn.classList.add('active');
+                            likeBtn.classList.remove('active');
+                        }
+                    } else {
+                        if (isLike) {
+                            likeBtn.classList.remove('active');
+                        } else {
+                            dislikeBtn.classList.remove('active');
+                        }
+                    }
+                }
+            });
+        });
+    });
 });
 </script>
 {% endblock content %}

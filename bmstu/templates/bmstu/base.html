@@ -85,5 +85,21 @@
         document.querySelector('.nav-links').classList.toggle('active');
     });
     </script>
+
+    <audio id="backgroundMusic" style="display: none;">
+        <source src="{% static 'img/32.mp3' %}" type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('login_success') === 'true') {
+                const audio = document.getElementById('backgroundMusic');
+                audio.play().catch(function(error) {
+                    console.log("Автоматическое воспроизведение не удалось:", error);
+                });
+            }
+        });
+    </script>
 </body>
 </html>

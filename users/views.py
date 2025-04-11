@@ -50,14 +50,6 @@ def view_profile(request, user_id):
     })
 
 
-
-
-
-
-
-
-
-
 def login(request):
     if request.method == 'GET':
         return render(request, 'users/login.html')
@@ -69,7 +61,7 @@ def login(request):
         if user is None:
             return render(request, 'users/login.html', {'error': 'Пользователь не найден'})
         auth.login(request,user)
-        return redirect('bmstu:home')
+        return HttpResponseRedirect(reverse('bmstu:home') + '?login_success=true')
 
 
 def signup(request):

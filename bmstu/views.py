@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 from bmstu.models import *
 from datetime import datetime, timedelta
 import time
@@ -56,6 +57,11 @@ def homeworks(request):
     
     homeworks = Homework.objects.all().order_by('-uploaded_at')
     subjects = Subject.objects.all()
+    
+   
+    for homework in homeworks:
+        homework.votes = homework.get_votes_count()
+        homework.user_vote = Vote.objects.filter(user=request.user, homework=homework).first()
     
     last_upload_time = request.session.get('last_upload_time')
     upload_disabled = False
@@ -120,6 +126,11 @@ def lecture(request):
     lectures = Lecture.objects.all().order_by('-uploaded_at')
     subjects = Subject.objects.all()
     
+  
+    for lecture in lectures:
+        lecture.votes = lecture.get_votes_count()
+        lecture.user_vote = Vote.objects.filter(user=request.user, lecture=lecture).first()
+    
     last_upload_time = request.session.get('last_upload_time_lecture')
     upload_disabled = False
     remaining_time = 0
@@ -176,7 +187,7 @@ def balance(request):
     if request.user.username == 'admin':
         balance.coins = 999999
     else:
-        # Расчет баланса: +10 монет за каждую одобренную работу, -1 за каждую отклоненную
+    
         balance.coins = (approved_homeworks.count() + approved_lectures.count()) * 10
         balance.coins -= (rejected_homework.count() + rejected_lectures.count())
     
@@ -194,4 +205,73 @@ def balance(request):
     }
     
     return render(request, 'bmstu/balance.html', context)
+
+
+@login_required
+def vote_homework(request, homework_id):
+    if request.method == 'POST':
+        homework = get_object_or_404(Homework, id=homework_id)
+        is_like = request.POST.get('is_like') == 'true'
+        
+        
+        vote = Vote.objects.filter(user=request.user, homework=homework).first()
+        
+        if vote:
+            if vote.is_like == is_like:
+           
+                vote.delete()
+                homework.update_status()
+                votes = homework.get_votes_count()
+                return JsonResponse({'status': 'removed', 'votes': votes})
+            else:
+        
+                vote.is_like = is_like
+                vote.save()
+        else:
+      
+            Vote.objects.create(
+                user=request.user,
+                homework=homework,
+                is_like=is_like
+            )
+        
+        homework.update_status()
+        votes = homework.get_votes_count()
+        return JsonResponse({'status': 'success', 'votes': votes})
+    
+    return JsonResponse({'status': 'error'}, status=400)
+
+@login_required
+def vote_lecture(request, lecture_id):
+    if request.method == 'POST':
+        lecture = get_object_or_404(Lecture, id=lecture_id)
+        is_like = request.POST.get('is_like') == 'true'
+        
+     
+        vote = Vote.objects.filter(user=request.user, lecture=lecture).first()
+        
+        if vote:
+            if vote.is_like == is_like:
+               
+                vote.delete()
+                lecture.update_status()
+                votes = lecture.get_votes_count()
+                return JsonResponse({'status': 'removed', 'votes': votes})
+            else:
+           
+                vote.is_like = is_like
+                vote.save()
+        else:
+           
+            Vote.objects.create(
+                user=request.user,
+                lecture=lecture,
+                is_like=is_like
+            )
+        
+        lecture.update_status()
+        votes = lecture.get_votes_count()
+        return JsonResponse({'status': 'success', 'votes': votes})
+    
+    return JsonResponse({'status': 'error'}, status=400)
         

@@ -84,9 +84,29 @@
                             </a>
                         {% endif %}
                     </div>
-                    <span class="status {% if homework.status == 'pending' %}pending{% elif homework.status == 'approved' %}accepted{% elif homework.status == 'rejected' %}rejected{% elif homework.status == 'revision' %}revision{% endif %}">
-                        {{ homework.get_status_display }}
-                    </span>
+                    <div class="work-item-right">
+                        <div class="work-item-right-top">
+                            <span class="status {% if homework.status == 'pending' %}pending{% elif homework.status == 'approved' %}accepted{% elif homework.status == 'rejected' %}rejected{% elif homework.status == 'revision' %}revision{% endif %}">
+                                {{ homework.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="work-item-right-bottom">
+                            <div class="vote-section">
+                                <button class="vote-btn like-btn {% if homework.user_vote and homework.user_vote.is_like %}active{% endif %}" 
+                                        data-type="like" 
+                                        data-url="{% url 'bmstu:vote_homework' homework.id %}">
+                                    <i class="far fa-heart"></i>
+                                    <span class="like-count">{{ homework.votes.likes }}</span>
+                                </button>
+                                <button class="vote-btn dislike-btn {% if homework.user_vote and not homework.user_vote.is_like %}active{% endif %}" 
+                                        data-type="dislike" 
+                                        data-url="{% url 'bmstu:vote_homework' homework.id %}">
+                                    <i class="far fa-thumbs-down"></i>
+                                    <span class="dislike-count">{{ homework.votes.dislikes }}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 {% empty %}
                 <div class="work-item">
@@ -133,6 +153,52 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 1000);
     }
+
+    const voteButtons = document.querySelectorAll('.vote-btn');
+    
+    voteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const url = this.dataset.url;
+            const isLike = this.dataset.type === 'like';
+            const homeworkItem = this.closest('.work-item');
+            const likeBtn = homeworkItem.querySelector('.like-btn');
+            const dislikeBtn = homeworkItem.querySelector('.dislike-btn');
+            const likeCount = homeworkItem.querySelector('.like-count');
+            const dislikeCount = homeworkItem.querySelector('.dislike-count');
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: `is_like=${isLike}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success' || data.status === 'removed') {
+                    likeCount.textContent = data.votes.likes;
+                    dislikeCount.textContent = data.votes.dislikes;
+                    
+                    if (data.status === 'success') {
+                        if (isLike) {
+                            likeBtn.classList.add('active');
+                            dislikeBtn.classList.remove('active');
+                        } else {
+                            dislikeBtn.classList.add('active');
+                            likeBtn.classList.remove('active');
+                        }
+                    } else {
+                        if (isLike) {
+                            likeBtn.classList.remove('active');
+                        } else {
+                            dislikeBtn.classList.remove('active');
+                        }
+                    }
+                }
+            });
+        });
+    });
 });
 </script>
 {% endblock content %}
