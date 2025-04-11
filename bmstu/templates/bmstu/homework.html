@@ -65,32 +65,34 @@
             <div class="works-list">
                 {% for homework in homeworks %}
                 <div class="work-item">
-                    <div class="work-info">
-                        <h3>{{ homework.subject.subject_title }}</h3>
-                        <p class="work-title">{{ homework.title }}</p>
-                        <p class="work-description">{{ homework.description }}</p>
-                        <div class="work-meta">
-                            <span class="student-name">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: -4px;">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                                Студент: {{ homework.student.get_full_name|default:homework.student.username }}</span>
-                            <span class="date">{{ homework.uploaded_at|date:"d.m.Y H:i" }}</span>
+                    <div class="work-item-content">
+                        <div class="work-info-container">
+                            <div class="work-info">
+                                <h3>{{ homework.subject.subject_title }}</h3>
+                                <p class="work-title">{{ homework.title }}</p>
+                                <p class="work-description">{{ homework.description }}</p>
+                                <div class="work-meta">
+                                    <span class="student-name">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: -4px;">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        Студент: {{ homework.student.get_full_name|default:homework.student.username }}</span>
+                                    <span class="date">{{ homework.uploaded_at|date:"d.m.Y H:i" }}</span>
+                                </div>
+                            </div>
+                            <div class="work-status">
+                                <span class="status {% if homework.status == 'pending' %}pending{% elif homework.status == 'approved' %}accepted{% elif homework.status == 'rejected' %}rejected{% elif homework.status == 'revision' %}revision{% endif %}">
+                                    {{ homework.get_status_display }}
+                                </span>
+                            </div>
                         </div>
-                        {% if homework.file %}
-                            <a href="{{ homework.file.url }}" class="download-button" download>
-                                <i class="fas fa-download"></i> Скачать работу
-                            </a>
-                        {% endif %}
-                    </div>
-                    <div class="work-item-right">
-                        <div class="work-item-right-top">
-                            <span class="status {% if homework.status == 'pending' %}pending{% elif homework.status == 'approved' %}accepted{% elif homework.status == 'rejected' %}rejected{% elif homework.status == 'revision' %}revision{% endif %}">
-                                {{ homework.get_status_display }}
-                            </span>
-                        </div>
-                        <div class="work-item-right-bottom">
+                        <div class="work-actions">
+                            {% if homework.file %}
+                                <a href="{{ homework.file.url }}" class="download-button" download>
+                                    <i class="fas fa-download"></i> Скачать работу
+                                </a>
+                            {% endif %}
                             <div class="vote-section">
                                 <button class="vote-btn like-btn {% if homework.user_vote and homework.user_vote.is_like %}active{% endif %}" 
                                         data-type="like" 

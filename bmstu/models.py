@@ -48,22 +48,15 @@ class Homework(models.Model):
     def update_status(self):
         likes = Vote.objects.filter(homework=self, is_like=True).count()
         dislikes = Vote.objects.filter(homework=self, is_like=False).count()
-        total = likes + dislikes
 
-        if total == 0:
+        if likes == 0 and dislikes == 0:
             self.status = 'pending'
+        elif dislikes > likes and dislikes - likes >= 2:
+            self.status = 'rejected'
+        elif likes > dislikes and likes - dislikes >= 2:
+            self.status = 'approved'
         else:
-            like_percentage = (likes / total) * 100
-            dislike_percentage = (dislikes / total) * 100
-
-            if like_percentage >= 75:
-                self.status = 'approved'
-            elif dislike_percentage >= 80:
-                self.status = 'rejected'
-            elif like_percentage >= 50:
-                self.status = 'revision'
-            else:
-                self.status = 'pending'
+            self.status = 'revision'
 
         self.save()
         self.update_balance()
@@ -117,22 +110,15 @@ class Lecture(models.Model):
     def update_status(self):
         likes = Vote.objects.filter(lecture=self, is_like=True).count()
         dislikes = Vote.objects.filter(lecture=self, is_like=False).count()
-        total = likes + dislikes
 
-        if total == 0:
+        if likes == 0 and dislikes == 0:
             self.status = 'pending'
+        elif dislikes > likes and dislikes - likes >= 2:
+            self.status = 'rejected'
+        elif likes > dislikes and likes - dislikes >= 2:
+            self.status = 'approved'
         else:
-            like_percentage = (likes / total) * 100
-            dislike_percentage = (dislikes / total) * 100
-
-            if like_percentage >= 75:
-                self.status = 'approved'
-            elif dislike_percentage >= 80:
-                self.status = 'rejected'
-            elif like_percentage >= 50:
-                self.status = 'revision'
-            else:
-                self.status = 'pending'
+            self.status = 'revision'
 
         self.save()
         self.update_balance()

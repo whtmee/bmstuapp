@@ -7,9 +7,60 @@
     <title>{% block title %}{% endblock title %}</title>
     
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
 </head>
 <body>
+    <!-- мобил меню -->
+    <div class="mobile-menu-overlay"></div>
+    <div class="mobile-nav">
+        <button class="close-btn">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="mobile-nav-content">
+            <div class="mobile-nav-header">
+                <h3 class="mobile-nav-title">Меню</h3>
+                <p class="mobile-nav-subtitle">Выберите нужный раздел</p>
+            </div>
+            <ul class="mobile-nav-links">
+                <li><a href="{% url 'bmstu:home' %}" {% if request.path == '/' %}class="active"{% endif %}>
+                    <i class="fas fa-home"></i>Главная
+                </a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'bmstu:stats' %}" {% if 'stat' in request.path %}class="active"{% endif %}>
+                        <i class="fas fa-chart-bar"></i>Статистика
+                    </a></li>
+                    <li><a href="{% url 'bmstu:homework' %}" {% if 'homework' in request.path %}class="active"{% endif %}>
+                        <i class="fas fa-book"></i>Домашнее задание
+                    </a></li>
+                    <li><a href="{% url 'bmstu:lecture' %}" {% if 'lecture' in request.path %}class="active"{% endif %}>
+                        <i class="fas fa-chalkboard-teacher"></i>Лекции
+                    </a></li>
+                    <li><a href="{% url 'users:profile' %}" {% if 'profile' in request.path %}class="active"{% endif %}>
+                        <i class="fas fa-user"></i>Профиль
+                    </a></li>
+                    <li>
+                        <form method="POST" action="{% url 'users:logout' %}" style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit" class="mobile-logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Выход
+                            </button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'users:signup' %}">
+                        <i class="fas fa-user-plus"></i>Регистрация
+                    </a></li>
+                    <li><a href="{% url 'users:login' %}">
+                        <i class="fas fa-sign-in-alt"></i>Войти
+                    </a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- основная навигация -->
     <nav class="navbar">
         <div class="navbar-left">
             <a href="/" style="text-decoration: none;">
@@ -22,12 +73,14 @@
                 <a href="{% url 'bmstu:balance' %}" class="balance-link">Баланс: </a>
             {% endif %}
         </div>
-        <div class="navbar-menu">
-            <div class="menu-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+        
+        <!-- кнопка мобильного меню -->
+        <button class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- десктопное меню -->
+        <div class="desktop-nav">
             <ul class="nav-links">
                 <li><a href="/" {% if request.path == '/' %}class="active"{% endif %}>Главная</a></li>
                 {% if user.is_authenticated %}
@@ -38,18 +91,17 @@
                     <li>
                         <form method="POST" action="{% url 'users:logout' %}" style="margin: 0;">
                             {% csrf_token %}
-                            <button type="submit" style="background: none; border: none; color: var(--color-dark); cursor: pointer; font-size: inherit; padding: 0;">Выход</button>
+                            <button type="submit" class="logout-btn">Выход</button>
                         </form>
                     </li>
                 {% else %}
-                    <li><a href="{% url 'users:signup' %}">Статистика</a></li>
-                    <li><a href="{% url 'users:signup' %}">Домашнее задание</a></li>
-                    <li><a href="{% url 'users:signup' %}">Лекции</a></li>
                     <li><a href="{% url 'users:signup' %}">Регистрация</a></li>
+                    <li><a href="{% url 'users:login' %}">Войти</a></li>
                 {% endif %}
             </ul>
         </div>
     </nav>
+
     {% block content %}
     {% endblock content %}
     
@@ -81,8 +133,29 @@
     </footer>
 
     <script>
-    document.querySelector('.menu-icon').addEventListener('click', function() {
-        document.querySelector('.nav-links').classList.toggle('active');
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const closeBtn = document.querySelector('.close-btn');
+        const mobileNav = document.querySelector('.mobile-nav');
+        const overlay = document.querySelector('.mobile-menu-overlay');
+
+        function toggleMenu() {
+            mobileNav.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+    
+        const mobileLinks = document.querySelectorAll('.mobile-nav-links a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                toggleMenu();
+            });
+        });
     });
     </script>
 

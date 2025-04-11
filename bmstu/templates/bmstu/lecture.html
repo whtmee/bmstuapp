@@ -64,37 +64,51 @@
             <h2>Последние загруженные лекции</h2>
             <div class="lectures-list">
                 {% for lecture in lectures %}
-                <div class="lecture-item" data-id="{{ lecture.id }}">
-                    <div class="lecture-info">
-                        <h3>{{ lecture.subject.subject_title }}</h3>
-                        <p class="lecture-title">{{ lecture.title }}</p>
-                        <p class="lecture-description">{{ lecture.description }}</p>
-                        <div class="lecture-meta">
-                            <span class="author-name">Автор: {{ lecture.author.get_full_name|default:lecture.author.username }}</span>
-                            <span class="date">{{ lecture.uploaded_at|date:"d.m.Y H:i" }}</span>
+                <div class="lecture-item">
+                    <div class="lecture-item-content">
+                        <div class="lecture-info-container">
+                            <div class="lecture-info">
+                                <h3>{{ lecture.subject.subject_title }}</h3>
+                                <p class="lecture-title">{{ lecture.title }}</p>
+                                <p class="lecture-description">{{ lecture.description }}</p>
+                                <div class="lecture-meta">
+                                    <span class="author-name">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: -4px;">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        Автор: {{ lecture.author.get_full_name|default:lecture.author.username }}
+                                    </span>
+                                    <span class="date">{{ lecture.uploaded_at|date:"d.m.Y H:i" }}</span>
+                                </div>
+                            </div>
+                            <div class="lecture-status">
+                                <span class="status {% if lecture.status == 'pending' %}pending{% elif lecture.status == 'approved' %}accepted{% elif lecture.status == 'rejected' %}rejected{% endif %}">
+                                    {{ lecture.get_status_display }}
+                                </span>
+                            </div>
                         </div>
-                        {% if lecture.file %}
-                            <a href="{{ lecture.file.url }}" class="btn-download-lecture" download>
-                                <i class="fas fa-download"></i> Скачать лекцию
-                            </a>
-                        {% endif %}
-                    </div>
-                    <span class="status {% if lecture.status == 'pending' %}pending{% elif lecture.status == 'approved' %}accepted{% elif lecture.status == 'rejected' %}rejected{% endif %}">
-                        {{ lecture.get_status_display }}
-                    </span>
-                    <div class="vote-section">
-                        <button class="vote-btn like-btn {% if lecture.user_vote and lecture.user_vote.is_like %}active{% endif %}" 
-                                data-type="like" 
-                                data-url="{% url 'bmstu:vote_lecture' lecture.id %}">
-                            <i class="far fa-heart"></i>
-                            <span class="like-count">{{ lecture.votes.likes }}</span>
-                        </button>
-                        <button class="vote-btn dislike-btn {% if lecture.user_vote and not lecture.user_vote.is_like %}active{% endif %}" 
-                                data-type="dislike" 
-                                data-url="{% url 'bmstu:vote_lecture' lecture.id %}">
-                            <i class="far fa-thumbs-down"></i>
-                            <span class="dislike-count">{{ lecture.votes.dislikes }}</span>
-                        </button>
+                        <div class="lecture-actions">
+                            {% if lecture.file %}
+                                <a href="{{ lecture.file.url }}" class="btn-download-lecture" download>
+                                    <i class="fas fa-download"></i> Скачать лекцию
+                                </a>
+                            {% endif %}
+                            <div class="vote-section">
+                                <button class="vote-btn like-btn {% if lecture.user_vote and lecture.user_vote.is_like %}active{% endif %}" 
+                                        data-type="like" 
+                                        data-url="{% url 'bmstu:vote_lecture' lecture.id %}">
+                                    <i class="far fa-heart"></i>
+                                    <span class="like-count">{{ lecture.votes.likes }}</span>
+                                </button>
+                                <button class="vote-btn dislike-btn {% if lecture.user_vote and not lecture.user_vote.is_like %}active{% endif %}" 
+                                        data-type="dislike" 
+                                        data-url="{% url 'bmstu:vote_lecture' lecture.id %}">
+                                    <i class="far fa-thumbs-down"></i>
+                                    <span class="dislike-count">{{ lecture.votes.dislikes }}</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 {% empty %}

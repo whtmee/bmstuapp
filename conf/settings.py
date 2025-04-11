@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-%3b+y-m0_7$rtu#+5i7m-kjqq^h1sw+asmb=@a89mfvoz3t^e6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']  # ПОТОМ УБРАТЬ ОБЯЗАТЕЛЬНО, ЭТО ТОЛЬКО ДЛЯ ПОДКЛЮЧЕНИЯ С ТЕЛЕФОНА И ТД
 
 
 # Application definition
