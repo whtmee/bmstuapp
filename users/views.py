@@ -23,9 +23,8 @@ def profile(request):
         user.save()
         
         if 'avatar' in request.FILES:
-            profile = user.profile
-            profile.avatar = request.FILES['avatar']
-            profile.save()
+            user.avatar = request.FILES['avatar']
+            user.save()
         
         messages.success(request, 'Профиль успешно обновлен!')
         return redirect('users:profile')
@@ -39,7 +38,7 @@ def profile(request):
 
 
 def view_profile(request, user_id):
-    viewed_user = get_object_or_404(User, id=user_id)
+    viewed_user = get_object_or_404(UserProfile, id=user_id)
     if viewed_user == request.user:
         return redirect('users:profile')
     return render(request, 'users/profile.html', {
@@ -75,7 +74,7 @@ def signup(request):
         
         if password1 == password2:
             try:
-                user = User.objects.create_user(username=username, password=password1, email=email)
+                user = UserProfile.objects.create_user(username=username, password=password1, email=email)
                 user.save()
                 
                 return redirect('users:login')

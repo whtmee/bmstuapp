@@ -11,8 +11,8 @@
         {% for user in users %}
         <div class="user-card">
             <div class="user-avatar">
-                {% if user.profile.avatar %}
-                    <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" class="avatar-img">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" class="avatar-img">
                 {% else %}
                     <img src="{% static 'img/noimage.jpg' %}" alt="{{ user.username }}" class="avatar-img">
                 {% endif %}
