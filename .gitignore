@@ -175,3 +175,6 @@ cython_debug/
 
 # mac
 .DS_STORE
+
+# vs_code
+.vscode/*
