@@ -22,17 +22,16 @@
                 <tr>
                     <td>
                         <div class="user-info">
-                            <div class="user-avatar">
-                                {% if stat.user.profile.avatar %}
-                                    <img src="{{ stat.user.profile.avatar.url }}" alt="Avatar" class="avatar-img">
-                                {% else %}
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="12" cy="7" r="4"></circle>
-                                    </svg>
-                                {% endif %}
-                            </div>
-                            <span class="user-name">{{ stat.user.get_full_name|default:stat.user.username }}</span>
+                            <a href="{% url 'users:profile' stat.user.id %}" class="user-info-link">
+                                <div class="user-avatar">
+                                    {% if stat.user.avatar %}
+                                        <img src="{{ stat.user.avatar.url }}" alt="Avatar" class="avatar-img">
+                                    {% else %}
+                                        <img src="{% static 'img/noimage.jpg' %}" alt="Default Avatar" class="avatar-img">
+                                    {% endif %}
+                                </div>
+                                <span class="user-name">{{ stat.user.get_full_name|default:stat.user.username }}</span>
+                            </a>
                         </div>
                     </td>
                     <td>

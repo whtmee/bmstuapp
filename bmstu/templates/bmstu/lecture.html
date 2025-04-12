@@ -72,13 +72,16 @@
                                 <p class="lecture-title">{{ lecture.title }}</p>
                                 <p class="lecture-description">{{ lecture.description }}</p>
                                 <div class="lecture-meta">
-                                    <span class="author-name">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: -4px;">
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="12" cy="7" r="4"></circle>
-                                        </svg>
-                                        Автор: {{ lecture.author.get_full_name|default:lecture.author.username }}
-                                    </span>
+                                    <a href="{% url 'users:profile' lecture.author.id %}" class="user-info-link">
+                                        <div class="user-avatar">
+                                            {% if lecture.author.avatar %}
+                                                <img src="{{ lecture.author.avatar.url }}" alt="Avatar" class="avatar-img">
+                                            {% else %}
+                                                <img src="{% static 'img/noimage.jpg' %}" alt="Default Avatar" class="avatar-img">
+                                            {% endif %}
+                                        </div>
+                                        <span class="author-name">{{ lecture.author.get_full_name|default:lecture.author.username }}</span>
+                                    </a>
                                     <span class="date">{{ lecture.uploaded_at|date:"d.m.Y H:i" }}</span>
                                 </div>
                             </div>

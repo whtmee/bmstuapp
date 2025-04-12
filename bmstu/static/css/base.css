@@ -14,7 +14,7 @@
 
 body {
     min-height: 100vh;
-    background: url('../img/wall.png') no-repeat center center fixed;
+    background: url('../img/gtt.gif') no-repeat center center fixed;
     background-size: cover;
     position: relative;
 }
@@ -1083,6 +1083,30 @@ textarea:disabled {
     gap: 1rem;
 }
 
+.user-info-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+.user-info-link:hover {
+    background: rgba(0, 64, 255, 0.05);
+}
+
+.user-info-link:hover .user-name {
+    color: #0040ff;
+}
+
+.user-info-link:hover .user-avatar {
+    border-color: #0040ff;
+    transform: scale(1.05);
+}
+
 .user-avatar {
     width: 40px;
     height: 40px;
@@ -1093,6 +1117,8 @@ textarea:disabled {
     justify-content: center;
     overflow: hidden;
     flex-shrink: 0;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
 }
 
 .avatar-img {
@@ -1104,7 +1130,7 @@ textarea:disabled {
 .user-name {
     font-weight: 500;
     color: #1a1a1a;
-    white-space: nowrap;
+    transition: color 0.3s ease;
 }
 
 .stat-value {
@@ -1914,6 +1940,12 @@ textarea:disabled {
     justify-content: center;
     overflow: hidden;
     flex-shrink: 0;
+    border: 2px solid #e0e0e0;
+    transition: border-color 0.3s ease;
+}
+
+.user-avatar:hover {
+    border-color: #0040ff;
 }
 
 .avatar-img {
@@ -2482,4 +2514,56 @@ textarea:disabled {
     color: #ff1a1a;
     background: rgba(255, 59, 59, 0.1);
     border-radius: 6px;
+}
+
+/* Стили для аватарок в домашних заданиях */
+.work-item .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.work-item .user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #e0e0e0;
+    transition: border-color 0.3s ease;
+}
+
+.work-item .user-avatar:hover {
+    border-color: #0040ff;
+}
+
+.work-item .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Стили для аватарок в лекциях */
+.lecture-item .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.lecture-item .user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #e0e0e0;
+    transition: border-color 0.3s ease;
+}
+
+.lecture-item .user-avatar:hover {
+    border-color: #0040ff;
+}
+
+.lecture-item .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
