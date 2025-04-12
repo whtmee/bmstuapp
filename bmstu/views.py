@@ -12,7 +12,7 @@ import time
 
 @login_required
 def home(request):
-    users = User.objects.all().order_by('username')
+    users = UserProfile.objects.all().order_by('username')
     return render(request, 'bmstu/home.html', {'users': users})
 
 
@@ -153,7 +153,7 @@ def lecture(request):
 
 @login_required
 def stata(request):
-    users = User.objects.all()
+    users = UserProfile.objects.all()
     user_stats = []
     
     for user in users:

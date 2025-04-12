@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from users.models import UserProfile
 from django.db.models import Count, Q
 
 class Subject(models.Model):
@@ -13,7 +13,7 @@ class Subject(models.Model):
         verbose_name_plural = 'Предметы'
 
 class Vote(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='Пользователь')
     homework = models.ForeignKey('Homework', on_delete=models.CASCADE, null=True, blank=True, verbose_name='Домашняя работа')
     lecture = models.ForeignKey('Lecture', on_delete=models.CASCADE, null=True, blank=True, verbose_name='Лекция')
     is_like = models.BooleanField(verbose_name='Лайк')
@@ -36,7 +36,7 @@ class Homework(models.Model):
     description = models.TextField(max_length=50,verbose_name='Описание')
     file = models.FileField(upload_to='homeworks/', verbose_name='Файл с работой')
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name='Предмет')
-    student = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Студент')
+    student = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='Студент')
     uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата загрузки')
     status = models.CharField(
         max_length=20,
@@ -98,7 +98,7 @@ class Lecture(models.Model):
     description = models.TextField(max_length=50,verbose_name='Описание')
     file = models.FileField(upload_to='lectures/', verbose_name='Файл лекции')
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name='Предмет')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор')
+    author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='Автор')
     uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата загрузки')
     status = models.CharField(
         max_length=20,
@@ -149,7 +149,7 @@ class Lecture(models.Model):
         verbose_name_plural = 'Лекции'
         
 class Balance(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='balance')
+    user = models.OneToOneField(UserProfile, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='balance')
     coins = models.IntegerField(default=0, verbose_name='Баланс')
     
     def __str__(self):

@@ -13,8 +13,8 @@
 <div class="profile-container">
     <div class="profile-card">
         <div class="profile-header">
-            {% if user.profile.avatar %}
-                <img src="{{ user.profile.avatar.url }}" alt="Profile Picture" class="profile-image">
+            {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" class="profile-image">
             {% else %}
                 <img src="{% static 'img/noimage.jpg' %}" alt="Profile Picture" class="profile-image">
             {% endif %}
