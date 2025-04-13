@@ -159,5 +159,34 @@ class Balance(models.Model):
         verbose_name = 'Баланс'
         verbose_name_plural = 'Балансы'
     
+def update_user_balance(user):
+    
+    balance, created = Balance.objects.get_or_create(user=user)
+    homeworks = Homework.objects.filter(student=user)
+    lectures = Lecture.objects.filter(author=user)
+    
+    total_coins = 0
+    for homework in homeworks:
+        if homework.status == 'approved':
+            total_coins += 10
+        elif homework.status == 'revision':
+            total_coins += 5
+        elif homework.status == 'rejected':
+            total_coins -= 1
+            
+    for lecture in lectures:
+        if lecture.status == 'approved':
+            total_coins += 10
+        elif lecture.status == 'revision':
+            total_coins += 5
+        elif lecture.status == 'rejected':
+            total_coins -= 1
+    
+    if user.username == 'admin':
+        total_coins = 999999
+        
+    balance.coins = total_coins
+    balance.save()
+    return balance
 
 

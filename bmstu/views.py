@@ -177,21 +177,10 @@ def stata(request):
 
 
 def balance(request):
-    balance, created = Balance.objects.get_or_create(user=request.user, defaults={'coins': 0})
+    balance = update_user_balance(request.user)
     
     approved_homeworks = Homework.objects.filter(student=request.user, status='approved')
     approved_lectures = Lecture.objects.filter(author=request.user, status='approved')
-    rejected_homework = Homework.objects.filter(student=request.user, status='rejected')
-    rejected_lectures = Lecture.objects.filter(author=request.user, status='rejected')
-    
-    if request.user.username == 'admin':
-        balance.coins = 999999
-    else:
-    
-        balance.coins = (approved_homeworks.count() + approved_lectures.count()) * 10
-        balance.coins -= (rejected_homework.count() + rejected_lectures.count())
-    
-    balance.save()
     
     user_money = {
         'user': request.user,

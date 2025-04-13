@@ -11,7 +11,7 @@ from django.db import IntegrityError
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from users.models import UserProfile
-from bmstu.models import Homework, Lecture
+from bmstu.models import Homework, Lecture, Balance, update_user_balance
 
 
 @login_required
@@ -28,6 +28,9 @@ def profile(request):
         
         messages.success(request, 'Профиль успешно обновлен!')
         return redirect('users:profile')
+    
+    
+    balance = update_user_balance(request.user)
         
     return render(request, 'users/profile.html', {
         'user': request.user,
@@ -41,6 +44,10 @@ def view_profile(request, user_id):
     viewed_user = get_object_or_404(UserProfile, id=user_id)
     if viewed_user == request.user:
         return redirect('users:profile')
+    
+
+    balance = update_user_balance(viewed_user)
+    
     return render(request, 'users/profile.html', {
         'user': viewed_user,
         'is_owner': False,
